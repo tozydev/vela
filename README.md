@@ -2,6 +2,8 @@
 
 📦 Lightweight Maven based artifact repository for Cloudflare Workers
 
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/tozydev/vela)
+
 This project is a simple Maven based artifact repository for Cloudflare Workers platform. It isn't a full-fledged
 artifact repository like Nexus or Artifactory, but it's a simple solution for small projects that need to store and
 retrieve artifacts. I chose Cloudflare Workers because it's free and it's a serverless platform, so you don't need to

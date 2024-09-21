@@ -20,6 +20,7 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Deploy to Cloudflare Workers
+        id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

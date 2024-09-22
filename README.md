@@ -27,6 +27,10 @@ worry about the infrastructure.
 - [Cloudflare Workers](https://www.cloudflare.com/developer-platform/workers/)
 - [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/)
 
+## Documentation
+
+- [API Documentation](docs/API_DOCS.md)
+
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.

@@ -9,13 +9,13 @@
     "cf-typegen": "wrangler types"
   },
   "dependencies": {
-    "hono": "^4.6.2"
+    "hono": "^4.7.10"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.5.7",
-    "@cloudflare/workers-types": "^4.20240919.0",
-    "typescript": "^5.6.2",
-    "vitest": "^2.1.1",
-    "wrangler": "^3.78.7"
+    "@cloudflare/vitest-pool-workers": "^0.5.41",
+    "@cloudflare/workers-types": "^4.20250521.0",
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.9",
+    "wrangler": "^3.114.8"
   }
 }

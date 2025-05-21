@@ -7,19 +7,36 @@
     "directory": "./dist"
   },
   "vars": {
-    "PUBLIC_REPOSITORIES": [
-      "releases",
-      "snapshots"
-    ],
-    "PRIVATE_REPOSITORIES": [
-      "private"
+    "REPOSITORIES": [
+      {
+        "name": "releases",
+        "private": false,
+        "bucket": "VELA_RELEASES"
+      },
+      {
+        "name": "snapshots",
+        "private": false,
+        "bucket": "VELA_SNAPSHOTS"
+      },
+      {
+        "name": "private",
+        "private": true,
+        "bucket": "VELA_PRIVATE"
+      }
     ]
   },
   "r2_buckets": [
     {
-      "binding": "VELA_BUCKET",
-      "bucket_name": "vela",
-      "preview_bucket_name": "vela-preview"
+      "binding": "VELA_RELEASES",
+      "bucket_name": "vela-releases"
+    },
+    {
+      "binding": "VELA_SNAPSHOTS",
+      "bucket_name": "vela-snapshots"
+    },
+    {
+      "binding": "VELA_PRIVATE",
+      "bucket_name": "vela-private"
     }
   ]
 }

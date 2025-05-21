@@ -1,5 +1,6 @@
 # prod
 dist/
+dist-server/
 
 # dev
 .yarn/
@@ -7,9 +8,7 @@ dist/
 .vscode/*
 !.vscode/launch.json
 !.vscode/*.code-snippets
-.idea/workspace.xml
-.idea/usage.statistics.xml
-.idea/shelf
+.idea/
 
 # deps
 node_modules/

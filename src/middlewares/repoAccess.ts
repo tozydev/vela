@@ -1,4 +1,3 @@
-import { Context } from "hono"
 import { basicAuth } from "hono/basic-auth"
 import { createMiddleware } from "hono/factory"
 
@@ -21,7 +20,7 @@ export const repoAccess = createMiddleware(async (c, next) => {
 
   const auth = basicAuth({
     username: c.env.USERNAME,
-    password: c.env.PASSWORD,
+    password: c.env.PASSWORD
   })
   return auth(c, next)
 })

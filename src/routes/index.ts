@@ -4,5 +4,5 @@ export { getArtifact } from "./getArtifact"
 
 export const Routes = {
   REPO: "/:repo/*",
-  ARTIFACT_PATH: "/:repo/:path{.+}",
+  ARTIFACT_PATH: "/:repo/:path{.+}"
 }

@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vela",
+  "compatibility_date": "2025-04-03",
+  "main": "./src/index.ts",
+  "assets": {
+    "directory": "./dist"
+  },
+  "vars": {
+    "PUBLIC_REPOSITORIES": [
+      "releases",
+      "snapshots"
+    ],
+    "PRIVATE_REPOSITORIES": [
+      "private"
+    ]
+  },
+  "r2_buckets": [
+    {
+      "binding": "VELA_BUCKET",
+      "bucket_name": "vela",
+      "preview_bucket_name": "vela-preview"
+    }
+  ]
+}

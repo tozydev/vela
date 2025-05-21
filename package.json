@@ -2,20 +2,25 @@
   "name": "vela",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "deploy": "wrangler deploy --minify",
-    "dev": "wrangler dev --port 8080",
-    "test": "vitest",
-    "cf-typegen": "wrangler types"
+    "dev": "vite",
+    "build": "vite build && vite build --ssr",
+    "preview": "$npm_execpath run build && wrangler dev dist-server/index.js",
+    "deploy": "$npm_execpath run build && wrangler deploy dist-server/index.js",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
   },
   "dependencies": {
     "hono": "^4.7.10"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.5.41",
-    "@cloudflare/workers-types": "^4.20250521.0",
+    "@cloudflare/vite-plugin": "^1.2.3",
+    "@cloudflare/vitest-pool-workers": "^0.8.31",
+    "@hono/vite-build": "^1.6.1",
     "typescript": "^5.8.3",
-    "vitest": "^2.1.9",
-    "wrangler": "^3.114.8"
+    "vite": "^6.3.5",
+    "vite-plugin-ssr-hot-reload": "^0.5.0",
+    "vitest": "^3.1.4",
+    "wrangler": "^4.16.0"
   }
 }

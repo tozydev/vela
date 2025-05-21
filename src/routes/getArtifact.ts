@@ -1,6 +1,6 @@
 import { Context } from "hono"
 
-export const getArtifact = async (c: Context<{ Bindings: Env }>) => {
+export const getArtifact = async (c: Context<{ Bindings: CloudflareBindings }>) => {
   const storage = c.env.VELA_BUCKET
   const artifact = await storage.get(c.req.path.slice(1))
   if (!artifact) {

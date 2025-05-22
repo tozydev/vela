@@ -1,6 +1,7 @@
 import { Hono } from "hono"
 import type { VelaEnv } from "./types"
 import { authHandler } from "./middleware"
+import { getMimeType } from "./utils"
 
 const app = new Hono<VelaEnv>()
 
@@ -26,6 +27,7 @@ app.on(["POST", "PUT"], ARTIFACT_PATH, async (c) => {
   const repository = c.get("repository")
 
   const headers = new Headers(c.req.header())
+  headers.set("Content-Type", getMimeType(path) || headers.get("Content-Type") || "application/octet-stream")
   await repository.putArtifact(path, await c.req.blob(), { httpMetadata: headers })
 
   return c.newResponse(null, 201, {

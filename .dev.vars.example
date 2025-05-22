@@ -1,2 +1,4 @@
 VELA_USERNAME=admin
 VELA_PASSWORD=admin
+REPOSITORY_releases_USERNAME=release
+REPOSITORY_releases_PASSWORD=release-password

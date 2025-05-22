@@ -3,7 +3,7 @@ import { Context } from "hono"
 export type VelaVariables = {
   repository: Repository
 }
-export type VelaEnv = { Bindings: CloudflareBindings, Variables: VelaVariables }
+export type VelaEnv = { Bindings: CloudflareBindings & { [key: string]: string | null }, Variables: VelaVariables }
 export type VelaContext = Context<VelaEnv>
 
 export interface Repository {

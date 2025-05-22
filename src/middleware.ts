@@ -27,7 +27,19 @@ export const authHandler = createMiddleware(async (c: VelaContext, next) => {
   c.set("repository", repository)
 
   const auth = basicAuth({
-    verifyUser: (username, password, c: VelaContext) => username === c.env.VELA_USERNAME && password === c.env.VELA_PASSWORD
+    verifyUser: (username, password, c1) => {
+      if (username === c.env.REPOSITORY_USER && password === c.env.REPOSITORY_PASSWORD) {
+        return true
+      }
+
+      const repositoryUsername = c1.env[`REPOSITORY_${repo.toUpperCase()}_USERNAME`]
+      const repositoryPassword = c1.env[`REPOSITORY_${repo.toUpperCase()}_PASSWORD`]
+      if (!repositoryUsername || !repositoryPassword) {
+        return false
+      }
+
+      return username === repositoryUsername && password === repositoryPassword
+    }
   })
   return auth(c, next)
 })

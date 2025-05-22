@@ -1,36 +1,45 @@
 # Vela
 
-📦 Lightweight Maven based artifact repository for Cloudflare Workers
+📦 Lightweight Maven-compatible artifact hosting powered by Cloudflare Workers.
 
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/tozydev/vela)
 
-This project is a simple Maven based artifact repository for Cloudflare Workers platform. It isn't a full-fledged
-artifact repository like Nexus or Artifactory, but it's a simple solution for small projects that need to store and
-retrieve artifacts. I chose Cloudflare Workers because it's free and it's a serverless platform, so you don't need to
-worry about the infrastructure.
+Vela is a minimal, serverless artifact hosting service designed for small or personal use. Built on
+**Cloudflare Workers** and **R2**, it supports multiple repositories, basic authentication, and integration with Maven,
+Gradle, and other tools.
 
-## Features
+## ✨ Features
 
-- Lightweight and easy to use.
-- Store and retrieve artifacts via API.
-- Basic authentication.
-- Maven, Gradle, etc. are supported.
+- ✅ Lightweight and easy to use
+- 🔐 Basic authentication with per-repository credentials
+- 📁 Support for isolated or shared Cloudflare R2 buckets
+- 🛠️ Compatible with Maven, Gradle, and similar build tools
+- ☁️ Fully serverless — no infrastructure management
 
-## Limitations
+## ⚠️ Limitations
 
-- No UI for managing artifacts.
-- No support for listing/browsing artifacts.
-- Lack of features compared to full-fledged artifact repositories.
+- ❌ No UI for artifact management
+- ❌ No artifact browsing or listing support
+- ⚠️ Not a replacement for full-featured solutions like Nexus or Artifactory
 
-## Infrastructure
+## 🧰 Tech Stack
 
-- [Cloudflare Workers](https://www.cloudflare.com/developer-platform/workers/)
-- [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Runtime**: [Cloudflare Workers](https://workers.cloudflare.com/)
+- **Package Manager**: [bun](https://bun.sh)
+- **Framework**: [Hono](https://hono.dev)
+- **Build Tool**: [Vite](https://vite.dev)
+- **Testing**: [Vitest](https://vitest.dev)
+- **Storage**: [Cloudflare R2](https://www.cloudflare.com/products/r2/)
 
-## Documentation
+## 🚀 Getting Started
 
-- [API Documentation](docs/API_DOCS.md)
+Work-in-progress...
 
-## License
+## 📚 Documentation
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+* [API Documentation](docs/API_DOCS.md)
+
+## 📄 License
+
+This project is licensed under the Apache License 2.0 — see the [LICENSE](LICENSE) file for details.

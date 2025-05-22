@@ -10,8 +10,8 @@ app.use("/:repo/*", authHandler)
 
 app.get(ARTIFACT_PATH, async (c) => {
   const path = c.req.param("path")
-  const bucket = c.get("bucket")
-  const artifact = await bucket.get(path)
+  const repository = c.get("repository")
+  const artifact = await repository.getArtifact(path)
   if (!artifact) {
     return c.notFound()
   }
@@ -23,10 +23,10 @@ app.get(ARTIFACT_PATH, async (c) => {
 
 app.on(["POST", "PUT"], ARTIFACT_PATH, async (c) => {
   const path = c.req.param("path")
-  const bucket = c.get("bucket")
+  const repository = c.get("repository")
 
   const headers = new Headers(c.req.header())
-  await bucket.put(path, await c.req.blob(), { httpMetadata: headers })
+  await repository.putArtifact(path, await c.req.blob(), { httpMetadata: headers })
 
   return c.newResponse(null, 201, {
     Location: c.req.url
@@ -35,9 +35,9 @@ app.on(["POST", "PUT"], ARTIFACT_PATH, async (c) => {
 
 app.on("DELETE", ARTIFACT_PATH, async (c) => {
   const path = c.req.param("path")
-  const bucket = c.get("bucket")
+  const repository = c.get("repository")
 
-  await bucket.delete(path)
+  await repository.deleteArtifact(path)
 
   return c.newResponse(null, 204)
 })

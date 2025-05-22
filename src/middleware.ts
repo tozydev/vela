@@ -1,6 +1,7 @@
 import { createMiddleware } from "hono/factory"
 import { basicAuth } from "hono/basic-auth"
 import type { VelaContext } from "./types"
+import { RepositoryImpl } from "./repository"
 
 export const authHandler = createMiddleware(async (c: VelaContext, next) => {
   const repo = c.req.param("repo")
@@ -22,7 +23,8 @@ export const authHandler = createMiddleware(async (c: VelaContext, next) => {
     return c.notFound()
   }
 
-  c.set("bucket", bucket)
+  const repository = new RepositoryImpl(config.name, config.private, bucket, config.prefix)
+  c.set("repository", repository)
 
   const auth = basicAuth({
     verifyUser: (username, password, c: VelaContext) => username === c.env.VELA_USERNAME && password === c.env.VELA_PASSWORD

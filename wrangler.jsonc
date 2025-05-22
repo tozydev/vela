@@ -11,17 +11,20 @@
       {
         "name": "releases",
         "private": false,
-        "bucket": "VELA_RELEASES"
+        "bucket": "VELA_RELEASES",
+        "prefix": null
       },
       {
         "name": "snapshots",
         "private": false,
-        "bucket": "VELA_SNAPSHOTS"
+        "bucket": "VELA_SNAPSHOTS",
+        "prefix": null
       },
       {
         "name": "private",
         "private": true,
-        "bucket": "VELA_PRIVATE"
+        "bucket": "VELA_PRIVATE",
+        "prefix": null
       }
     ]
   },

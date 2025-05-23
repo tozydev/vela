@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "vela",
+  "minify": true,
   "compatibility_date": "2025-04-03",
   "main": "./src/index.ts",
   "assets": {
@@ -11,35 +12,27 @@
       {
         "name": "releases",
         "private": false,
-        "bucket": "VELA_RELEASES",
-        "prefix": null
+        "bucket": "VELA_BUCKET",
+        "prefix": "releases"
       },
       {
         "name": "snapshots",
         "private": false,
-        "bucket": "VELA_SNAPSHOTS",
-        "prefix": null
+        "bucket": "VELA_BUCKET",
+        "prefix": "snapshots"
       },
       {
         "name": "private",
         "private": true,
-        "bucket": "VELA_PRIVATE",
-        "prefix": null
+        "bucket": "VELA_BUCKET",
+        "prefix": "private"
       }
     ]
   },
   "r2_buckets": [
     {
-      "binding": "VELA_RELEASES",
-      "bucket_name": "vela-releases"
-    },
-    {
-      "binding": "VELA_SNAPSHOTS",
-      "bucket_name": "vela-snapshots"
-    },
-    {
-      "binding": "VELA_PRIVATE",
-      "bucket_name": "vela-private"
+      "binding": "VELA_BUCKET",
+      "bucket_name": "vela"
     }
   ]
 }

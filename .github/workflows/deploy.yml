@@ -25,9 +25,9 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           secrets: |
-            USERNAME
-            PASSWORD
+            VELA_USERNAME
+            VELA_PASSWORD
 
         env:
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}
+          VELA_USERNAME: ${{ secrets.VELA_USERNAME }}
+          VELA_PASSWORD: ${{ secrets.VELA_PASSWORD }}

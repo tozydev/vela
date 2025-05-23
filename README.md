@@ -40,6 +40,11 @@ Work-in-progress...
 
 * [API Documentation](docs/API_DOCS.md)
 
+## 💥 Breaking Changes
+
+If you are upgrading from a previous version, please refer to the [CHANGELOG](docs/changes.md) for details on breaking
+changes and migration steps.
+
 ## 📄 License
 
 This project is licensed under the Apache License 2.0 — see the [LICENSE](LICENSE) file for details.

@@ -16,6 +16,7 @@ This file also provides migration guides for breaking changes.
 - Introduce `REPOSITORIES` vars configuration with detail on each repository.
 - Support for multiple repositories with different authentication credentials.
 - Support for isolated or shared Cloudflare R2 buckets.
+- Artifact MIME type detection based on file extension when deploying.
 
 ### Others
 

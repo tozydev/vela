@@ -8,7 +8,7 @@ This file also provides migration guides for breaking changes.
 ### Breaking Changes
 
 - Changes Wrangler configuration file format from `wangler.toml` to `wrangler.jsonc`.
-- Rename `USERNAME` and `PASSWORD` environment variables to `VELA_USERNAME` and `VELA_PASSWORD`.
+- Rename `USERNAME` and `PASSWORD` environment variables to `REPOSITORY_USERNAME` and `REPOSITORY_PASSWORD`.
 - Merge `PUBLIC_REPOSITORIES` and `PRIVATE_REPOSITORIES` into a single `REPOSITORIES` vars configuration.
 
 ### Features
@@ -32,7 +32,8 @@ Future documentation will be provided for `wrangler.jsonc` only.
 
 To migrate from the previous version to 1.0.0, follow these steps (I assumed that you've migrated to `wrangler.jsonc`):
 
-1. **Update Environment Variables**: Rename `USERNAME` and `PASSWORD` to `VELA_USERNAME` and `VELA_PASSWORD`.
+1. **Update Environment Variables**: Rename `USERNAME` and `PASSWORD` to `REPOSITORY_USERNAME` and
+   `REPOSITORY_PASSWORD`.
 2. **Update Configuration**: Merge `PUBLIC_REPOSITORIES` and `PRIVATE_REPOSITORIES` into a single `REPOSITORIES`
    configuration.
 

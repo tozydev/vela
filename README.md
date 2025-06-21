@@ -187,15 +187,15 @@ Vela uses environment variables for authentication credentials. You can set the 
 
 | Variable                                | Description                                       |
 |-----------------------------------------|---------------------------------------------------|
-| `VELA_USERNAME`                         | The username for all repositories (required)      |
-| `VELA_PASSWORD`                         | The password for all repositories (required)      |
+| `REPOSITORY_USERNAME`                   | The username for all repositories (required)      |
+| `REPOSITORY_PASSWORD`                   | The password for all repositories (required)      |
 | `REPOSITORY_<repository name>_USERNAME` | The username for a specific repository (optional) |
 | `REPOSITORY_<repository name>_PASSWORD` | The password for a specific repository (optional) |
 
 _Where `<repository name>` is the name of the repository as defined in the `REPOSITORIES` configuration._
 
-I recommend using a strong random password for `VELA_PASSWORD` and `REPOSITORY_<repository name>_PASSWORD` to secure
-your repositories.
+I recommend using a strong random password for `REPOSITORY_PASSWORD` and `REPOSITORY_<repository name>_PASSWORD` to
+secure your repositories.
 
 ## 📚 Documentation
 

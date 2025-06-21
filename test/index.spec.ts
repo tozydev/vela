@@ -241,5 +241,10 @@ describe("Integration: API Endpoints", () => {
       const res = await app.request(`/non-existent-repo/${ARTIFACT_PATH}`, {}, TEST_ENV)
       expect(res.status).toBe(404)
     })
+    
+    it("should return 404 for a request without repository and path", async () => {
+      const res = await app.request("", {}, TEST_ENV)
+      expect(res.status).toBe(404)
+    })
   })
 })

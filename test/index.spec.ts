@@ -97,6 +97,11 @@ describe("Integration: API Endpoints", () => {
           expect(res.headers.get("content-type")).toContain("application/xml")
           expect(await res.text()).toBe(ARTIFACT_CONTENT)
         })
+
+        it("should return 404 for a request to root repository path", async () => {
+          const res = await app.request(`/${repo.name}/`, {}, TEST_ENV)
+          expect(res.status).toBe(404)
+        })
       })
     })
 
@@ -241,7 +246,7 @@ describe("Integration: API Endpoints", () => {
       const res = await app.request(`/non-existent-repo/${ARTIFACT_PATH}`, {}, TEST_ENV)
       expect(res.status).toBe(404)
     })
-    
+
     it("should return 404 for a request without repository and path", async () => {
       const res = await app.request("", {}, TEST_ENV)
       expect(res.status).toBe(404)

@@ -26,9 +26,14 @@ app.on(["POST", "PUT"], ARTIFACT_PATH, async (c) => {
   const path = c.req.param("path")
   const repository = c.get("repository")
 
+  const body = await c.req.blob()
+  if (!body || body.size === 0) {
+    return c.newResponse("No content provided", 400)
+  }
+
   const headers = new Headers(c.req.header())
   headers.set("Content-Type", getMimeType(path) || headers.get("Content-Type") || "application/octet-stream")
-  await repository.putArtifact(path, await c.req.blob(), { httpMetadata: headers })
+  await repository.putArtifact(path, body, { httpMetadata: headers })
 
   return c.newResponse(null, 201, {
     Location: c.req.url

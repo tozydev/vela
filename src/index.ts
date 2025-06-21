@@ -5,7 +5,7 @@ import { getMimeType } from "./utils"
 
 const app = new Hono<VelaEnv>()
 
-export const ARTIFACT_PATH = "/:repo/:path{.+}"
+const ARTIFACT_PATH = "/:repo/:path{.+}"
 
 app.use("/:repo/*", authHandler)
 

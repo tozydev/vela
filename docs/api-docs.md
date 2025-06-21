@@ -1,8 +1,5 @@
 # Vela API Documentation
 
-- Public repository: `releases`, `snapshots`
-- Private repository: `private`
-
 ## Authentication
 
 Vela uses basic authentication for securing the API.
@@ -28,9 +25,9 @@ Retrieve an artifact.
 
 - Status:
 
-  - `200 OK`: The artifact is found.
-  - `401 Unauthorized`: The request is not authenticated (private repository).
-  - `404 Not Found`: The artifact is not found.
+    - `200 OK`: The artifact is found.
+    - `401 Unauthorized`: The request is not authenticated (private repository).
+    - `404 Not Found`: The artifact is not found.
 
 - Body: Stream the artifact content.
 
@@ -57,8 +54,9 @@ Deploy an artifact.
 
 - Status:
 
-  - `201 Created`: The artifact is deployed.
-  - `401 Unauthorized`: The request is not authenticated.
+    - `201 Created`: The artifact is deployed.
+    - `400 Bad Request`: Content isn't provided.
+    - `401 Unauthorized`: The request is not authenticated.
 
 #### Example
 
@@ -83,8 +81,8 @@ Like `POST /{repository}/{artifact}`, deploy an artifact.
 
 - Status:
 
-  - `201 Created`: The artifact is deployed.
-  - `401 Unauthorized`: The request is not authenticated.
+    - `201 Created`: The artifact is deployed.
+    - `401 Unauthorized`: The request is not authenticated.
 
 #### Example
 
@@ -105,8 +103,8 @@ Delete an artifact.
 
 - Status:
 
-  - `204 No Content`: The artifact is deleted.
-  - `401 Unauthorized`: The request is not authenticated.
+    - `204 No Content`: The artifact is deleted.
+    - `401 Unauthorized`: The request is not authenticated.
 
 #### Example
 

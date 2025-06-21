@@ -1,251 +1,244 @@
 import { env } from "cloudflare:test"
-import app from "../src/index"
+import app from "../src"
+import { describe, it } from "vitest"
 
-const ARTIFACT = {
-  path: "io/github/tozydev/vela/1.0/vela-1.0.pom",
-  content: "<project>...</project>",
+const TEST_ENV = {
+  REPOSITORY_USERNAME: "admin",
+  REPOSITORY_PASSWORD: "admin",
+  "REPOSITORY_CUSTOM-CREDENTIAL_USERNAME": "custom",
+  "REPOSITORY_CUSTOM-CREDENTIAL_PASSWORD": "custom",
+  ...env
 }
 
-const VALID_AUTH = `Basic ${btoa(env.USERNAME + ":" + env.PASSWORD)}`
-const INVALID_AUTH = `Basic ${btoa("invalid:invalid")}`
+const ARTIFACT_PATH = "vn/id/tozydev/vela/1.0.0/vela-1.0.0.pom"
+const ARTIFACT_CONTENT = "<project>...</project>"
 
-describe("Public repository", () => {
-  const REPO = "/releases/"
-  it("should return 404 if artifact not found", async () => {
-    const res = await app.request(REPO + ARTIFACT.path, {}, env)
+const authHeader = `Basic ${btoa(`${TEST_ENV.REPOSITORY_USERNAME}:${TEST_ENV.REPOSITORY_PASSWORD}`)}`
+const customAuthHeader = `Basic ${btoa(`${TEST_ENV["REPOSITORY_CUSTOM-CREDENTIAL_USERNAME"]}:${TEST_ENV["REPOSITORY_CUSTOM-CREDENTIAL_PASSWORD"]}`)}`
+const testRepositories = [
+  {
+    name: "shared-public",
+    auth: authHeader,
+    prefix: "public",
+    bucket: TEST_ENV.SHARED_BUCKET
+  },
+  {
+    name: "shared-private",
+    auth: authHeader,
+    prefix: "private",
+    bucket: TEST_ENV.SHARED_BUCKET
+  },
+  {
+    name: "isolated-public",
+    auth: authHeader,
+    bucket: TEST_ENV.ISOLATED_PUBLIC_BUCKET
+  },
+  {
+    name: "isolated-private",
+    auth: authHeader,
+    bucket: TEST_ENV.ISOLATED_PRIVATE_BUCKET
+  },
+  {
+    name: "custom-credential",
+    auth: customAuthHeader,
+    prefix: "custom",
+    bucket: TEST_ENV.SHARED_BUCKET
+  }
+]
 
-    expect(res.status).toBe(404)
-  })
-
-  it("should deny for unauthorized POST deploy request without Authorization header", async () => {
-    const res = await app.request(REPO + ARTIFACT.path, { method: "POST", body: ARTIFACT.content }, env)
-
-    expect(res.status).toBe(401)
-  })
-
-  it("should deny for unauthorized POST request with invalid Authorization header", async () => {
-    const res = await app.request(
-      REPO + ARTIFACT.path,
+describe("Integration: API Endpoints", () => {
+  describe("GET /{repository}/{artifact}", () => {
+    const publicRepositories = [
       {
-        method: "POST",
-        headers: { Authorization: INVALID_AUTH },
-        body: ARTIFACT.content,
+        name: "shared-public",
+        bucket: TEST_ENV.SHARED_BUCKET,
+        prefix: "public"
       },
-      env,
-    )
-
-    expect(res.status).toBe(401)
-  })
-
-  it("should allow POST deploy request with valid Authorization header", async () => {
-    const res = await app.request(
-      REPO + ARTIFACT.path,
       {
-        method: "POST",
-        headers: { Authorization: VALID_AUTH },
-        body: ARTIFACT.content,
+        name: "custom-credential",
+        bucket: TEST_ENV.SHARED_BUCKET,
+        prefix: "custom"
       },
-      env,
-    )
-
-    expect(res.status).toBe(201)
-    expect(res.headers.get("Location")).contains(REPO + ARTIFACT.path)
-
-    const getRes = await app.request(REPO + ARTIFACT.path, {}, env)
-    expect(getRes.status).toBe(200)
-    expect(await getRes.text()).toBe(ARTIFACT.content)
-  })
-
-  it("should allow GET request for existing artifact", async () => {
-    const res = await app.request(REPO + ARTIFACT.path, {}, env)
-
-    expect(res.status).toBe(200)
-    expect(await res.text()).toBe(ARTIFACT.content)
-  })
-
-  it("should deny for unauthorized DELETE request without Authorization header", async () => {
-    const res = await app.request(REPO + ARTIFACT.path, { method: "DELETE" }, env)
-
-    expect(res.status).toBe(401)
-  })
-
-  it("should deny for unauthorized DELETE request with invalid Authorization header", async () => {
-    const res = await app.request(
-      REPO + ARTIFACT.path,
-      { method: "DELETE", headers: { Authorization: INVALID_AUTH } },
-      env,
-    )
-
-    expect(res.status).toBe(401)
-  })
-
-  it("should allow DELETE request with valid Authorization header", async () => {
-    const res = await app.request(
-      REPO + ARTIFACT.path,
-      { method: "DELETE", headers: { Authorization: VALID_AUTH } },
-      env,
-    )
-
-    expect(res.status).toBe(204)
-
-    const getRes = await app.request(REPO + ARTIFACT.path, {}, env)
-    expect(getRes.status).toBe(404)
-  })
-
-  it("should deny for unauthorized PUT request without Authorization header", async () => {
-    const res = await app.request(REPO + ARTIFACT.path, { method: "PUT", body: ARTIFACT.content }, env)
-
-    expect(res.status).toBe(401)
-  })
-
-  it("should deny for unauthorized PUT request with invalid Authorization header", async () => {
-    const res = await app.request(
-      REPO + ARTIFACT.path,
-      { method: "PUT", headers: { Authorization: INVALID_AUTH }, body: ARTIFACT.content },
-      env,
-    )
-
-    expect(res.status).toBe(401)
-  })
-
-  it("should allow PUT request with valid Authorization header", async () => {
-    const res = await app.request(
-      REPO + ARTIFACT.path,
-      { method: "PUT", headers: { Authorization: VALID_AUTH }, body: ARTIFACT.content },
-      env,
-    )
-
-    expect(res.status).toBe(201)
-
-    const getRes = await app.request(REPO + ARTIFACT.path, {}, env)
-    expect(getRes.status).toBe(200)
-    expect(await getRes.text()).toBe(ARTIFACT.content)
-  })
-})
-
-describe("Private repository", () => {
-  const REPO = "/private/"
-  it("should deny for unauthorized GET request without Authorization header", async () => {
-    const res = await app.request(REPO + ARTIFACT.path, {}, env)
-
-    expect(res.status).toBe(401)
-  })
-
-  it("should deny for unauthorized GET request with invalid Authorization header", async () => {
-    const res = await app.request(REPO + ARTIFACT.path, { headers: { Authorization: INVALID_AUTH } }, env)
-
-    expect(res.status).toBe(401)
-  })
-
-  it("should return 404 if artifact not found with valid Authorization header", async () => {
-    const res = await app.request(REPO + ARTIFACT.path, { headers: { Authorization: VALID_AUTH } }, env)
-
-    expect(res.status).toBe(404)
-  })
-
-  it("should deny for unauthorized POST deploy request without Authorization header", async () => {
-    const res = await app.request(REPO + ARTIFACT.path, { method: "POST", body: ARTIFACT.content }, env)
-
-    expect(res.status).toBe(401)
-  })
-
-  it("should deny for unauthorized POST request with invalid Authorization header", async () => {
-    const res = await app.request(
-      REPO + ARTIFACT.path,
       {
-        method: "POST",
-        headers: { Authorization: INVALID_AUTH },
-        body: ARTIFACT.content,
-      },
-      env,
-    )
-
-    expect(res.status).toBe(401)
-  })
-
-  it("should allow POST deploy request with valid Authorization header", async () => {
-    const res = await app.request(
-      REPO + ARTIFACT.path,
+        name: "isolated-public",
+        bucket: TEST_ENV.ISOLATED_PUBLIC_BUCKET
+      }
+    ]
+    const privateRepositories = [
       {
-        method: "POST",
-        headers: { Authorization: VALID_AUTH },
-        body: ARTIFACT.content,
+        name: "shared-private",
+        bucket: TEST_ENV.SHARED_BUCKET,
+        prefix: "private"
       },
-      env,
-    )
+      {
+        name: "isolated-private",
+        bucket: TEST_ENV.ISOLATED_PRIVATE_BUCKET
+      }
+    ]
 
-    expect(res.status).toBe(201)
-    expect(res.headers.get("Location")).contains(REPO + ARTIFACT.path)
+    publicRepositories.forEach((repo) => {
+      describe(`Public Repository (${repo.name})`, () => {
+        it("should return 404 for a non-existent artifact", async () => {
+          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {}, TEST_ENV)
+          expect(res.status).toBe(404)
+        })
 
-    const getRes = await app.request(REPO + ARTIFACT.path, { headers: { Authorization: VALID_AUTH } }, env)
-    expect(getRes.status).toBe(200)
-    expect(await getRes.text()).toBe(ARTIFACT.content)
+        it("should return 200 and the artifact content if it exists", async () => {
+          const bucketPath = repo.prefix ? `${repo.prefix}/${ARTIFACT_PATH}` : ARTIFACT_PATH
+
+          await repo.bucket.put(bucketPath, ARTIFACT_CONTENT, {
+            httpMetadata: { contentType: "application/xml" }
+          })
+
+          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {}, TEST_ENV)
+
+          expect(res.status).toBe(200)
+          expect(res.headers.get("content-type")).toContain("application/xml")
+          expect(await res.text()).toBe(ARTIFACT_CONTENT)
+        })
+      })
+    })
+
+    privateRepositories.forEach((repo) => {
+      describe(`Private Repository (${repo.name})`, () => {
+        it("should return 401 Unauthorized without authentication", async () => {
+          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {}, TEST_ENV)
+          expect(res.status).toBe(401)
+        })
+
+        it("should return 401 Unauthorized with bad credentials", async () => {
+          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
+            headers: { Authorization: "Basic badcreds" }
+          }, TEST_ENV)
+
+          expect(res.status).toBe(401)
+        })
+
+        it("should return 404 for a non-existent artifact with valid auth", async () => {
+          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
+            headers: { Authorization: authHeader }
+          }, TEST_ENV)
+
+          expect(res.status).toBe(404)
+        })
+
+        it("should return 200 and the artifact with valid auth", async () => {
+          const bucketPath = repo.prefix ? `${repo.prefix}/${ARTIFACT_PATH}` : ARTIFACT_PATH
+          await repo.bucket.put(bucketPath, ARTIFACT_CONTENT, {
+            httpMetadata: { contentType: "application/xml" }
+          })
+
+          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
+            headers: { Authorization: authHeader }
+          }, TEST_ENV)
+
+          expect(res.status).toBe(200)
+          expect(await res.text()).toBe(ARTIFACT_CONTENT)
+        })
+      })
+    })
   })
 
-  it("should allow GET request for existing artifact", async () => {
-    const res = await app.request(REPO + ARTIFACT.path, { headers: { Authorization: VALID_AUTH } }, env)
+  describe("PUT & POST /{repository}/{artifact}", () => {
+    const methods = ["PUT", "POST"]
+    methods.forEach((method) => {
+      describe(`Using ${method}`, () => {
+        testRepositories.forEach((repo) => {
+          const name = repo.name === "custom-credential" ? `Per-Repository Credentials (${repo.name})` : `Shared Credentials (${repo.name})`
+          describe(name, () => {
+            it("should return 401 when deploying without auth", async () => {
+              const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
+                method,
+                body: ARTIFACT_CONTENT
+              }, TEST_ENV)
+              expect(res.status).toBe(401)
+            })
 
-    expect(res.status).toBe(200)
-    expect(await res.text()).toBe(ARTIFACT.content)
+            it("should return 401 when deploying with bad credentials", async () => {
+              const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
+                method,
+                body: ARTIFACT_CONTENT,
+                headers: { Authorization: "Basic badcreds" }
+              }, TEST_ENV)
+              expect(res.status).toBe(401)
+            })
+
+            it("should return 201 when deploy artifact with valid auth", async () => {
+              const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
+                method,
+                body: ARTIFACT_CONTENT,
+                headers: { Authorization: repo.auth, "Content-Type": "application/xml" }
+              }, TEST_ENV)
+              expect(res.status).toBe(201)
+
+              // Verify
+              const bucketPath = repo.prefix ? `${repo.prefix}/${ARTIFACT_PATH}` : ARTIFACT_PATH
+              const obj = await repo.bucket.get(bucketPath)
+              expect(obj).not.toBeNull()
+              expect(await obj?.text()).toBe(ARTIFACT_CONTENT)
+              expect(obj?.httpMetadata?.contentType).toBe("application/xml")
+            })
+
+            it("should return 400 when deploying with empty body", async () => {
+              const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
+                method,
+                body: "",
+                headers: { Authorization: repo.auth, "Content-Type": "application/xml" }
+              }, TEST_ENV)
+              expect(res.status).toBe(400)
+            })
+          })
+        })
+      })
+    })
   })
 
-  it("should deny for unauthorized DELETE request without Authorization header", async () => {
-    const res = await app.request(REPO + ARTIFACT.path, { method: "DELETE" }, env)
+  describe("DELETE /{repository}/{artifact}", () => {
+    testRepositories.forEach((repo) => {
+      const name = repo.name === "custom-credential" ? `Per-Repository Credentials (${repo.name})` : `Shared Credentials (${repo.name})`
+      describe(name, () => {
+        it("should return 401 when deleting without auth", async () => {
+          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, { method: "DELETE" }, TEST_ENV)
+          expect(res.status).toBe(401)
+        })
 
-    expect(res.status).toBe(401)
+        it("should return 401 when deleting with bad credentials", async () => {
+          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
+            method: "DELETE",
+            headers: { Authorization: "Basic badcreds" }
+          }, TEST_ENV)
+          expect(res.status).toBe(401)
+        })
+
+        it("should return 204 when deleting with valid auth", async () => {
+          const bucketPath = repo.prefix ? `${repo.prefix}/${ARTIFACT_PATH}` : ARTIFACT_PATH
+          await repo.bucket.put(bucketPath, ARTIFACT_CONTENT)
+
+          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
+            method: "DELETE",
+            headers: { Authorization: repo.auth }
+          }, TEST_ENV)
+          expect(res.status).toBe(204)
+
+          const obj = await repo.bucket.get(bucketPath)
+          expect(obj).toBeNull()
+        })
+
+        it("should return 204 when deleting an artifact that does not exist", async () => {
+          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
+            method: "DELETE",
+            headers: { Authorization: repo.auth }
+          }, TEST_ENV)
+          expect(res.status).toBe(204)
+        })
+      })
+    })
   })
 
-  it("should deny for unauthorized DELETE request with invalid Authorization header", async () => {
-    const res = await app.request(
-      REPO + ARTIFACT.path,
-      { method: "DELETE", headers: { Authorization: INVALID_AUTH } },
-      env,
-    )
-
-    expect(res.status).toBe(401)
-  })
-
-  it("should allow DELETE request with valid Authorization header", async () => {
-    const res = await app.request(
-      REPO + ARTIFACT.path,
-      { method: "DELETE", headers: { Authorization: VALID_AUTH } },
-      env,
-    )
-
-    expect(res.status).toBe(204)
-
-    const getRes = await app.request(REPO + ARTIFACT.path, { headers: { Authorization: VALID_AUTH } }, env)
-    expect(getRes.status).toBe(404)
-  })
-
-  it("should deny for unauthorized PUT request without Authorization header", async () => {
-    const res = await app.request(REPO + ARTIFACT.path, { method: "PUT", body: ARTIFACT.content }, env)
-
-    expect(res.status).toBe(401)
-  })
-
-  it("should deny for unauthorized PUT request with invalid Authorization header", async () => {
-    const res = await app.request(
-      REPO + ARTIFACT.path,
-      { method: "PUT", headers: { Authorization: INVALID_AUTH }, body: ARTIFACT.content },
-      env,
-    )
-
-    expect(res.status).toBe(401)
-  })
-
-  it("should allow PUT request with valid Authorization header", async () => {
-    const res = await app.request(
-      REPO + ARTIFACT.path,
-      { method: "PUT", headers: { Authorization: VALID_AUTH }, body: ARTIFACT.content },
-      env,
-    )
-
-    expect(res.status).toBe(201)
-    expect(res.headers.get("Location")).contains(REPO + ARTIFACT.path)
-
-    const getRes = await app.request(REPO + ARTIFACT.path, { headers: { Authorization: VALID_AUTH } }, env)
-    expect(getRes.status).toBe(200)
-    expect(await getRes.text()).toBe(ARTIFACT.content)
+  describe("Edge Cases", () => {
+    it("should return 404 for a request to an undefined repository", async () => {
+      const res = await app.request(`/non-existent-repo/${ARTIFACT_PATH}`, {}, TEST_ENV)
+      expect(res.status).toBe(404)
+    })
   })
 })

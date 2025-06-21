@@ -8,6 +8,7 @@
     "build": "vite build",
     "test": "vitest run",
     "test:dev": "vitest dev",
+    "coverage": "vitest run --coverage",
     "preview": "$npm_execpath run build && vite preview",
     "deploy": "$npm_execpath run build && wrangler deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"
@@ -19,6 +20,7 @@
     "@cloudflare/vite-plugin": "^1.7.4",
     "@cloudflare/vitest-pool-workers": "^0.8.43",
     "@hono/vite-build": "^1.6.2",
+    "@vitest/coverage-istanbul": "3.2.4",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
     "vite-plugin-ssr-hot-reload": "^0.5.0",

@@ -13,6 +13,7 @@ const TEST_ENV = {
 const ARTIFACT_PATH = "vn/id/tozydev/vela/1.0.0/vela-1.0.0.pom"
 const ARTIFACT_CONTENT = "<project>...</project>"
 
+const invalidAuthHeader = `Basic ${btoa("invalid:credentials")}`
 const authHeader = `Basic ${btoa(`${TEST_ENV.REPOSITORY_USERNAME}:${TEST_ENV.REPOSITORY_PASSWORD}`)}`
 const customAuthHeader = `Basic ${btoa(`${TEST_ENV["REPOSITORY_CUSTOM-CREDENTIAL_USERNAME"]}:${TEST_ENV["REPOSITORY_CUSTOM-CREDENTIAL_PASSWORD"]}`)}`
 const testRepositories = [
@@ -108,7 +109,7 @@ describe("Integration: API Endpoints", () => {
 
         it("should return 401 Unauthorized with bad credentials", async () => {
           const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
-            headers: { Authorization: "Basic badcreds" }
+            headers: { Authorization: invalidAuthHeader }
           }, TEST_ENV)
 
           expect(res.status).toBe(401)
@@ -158,7 +159,7 @@ describe("Integration: API Endpoints", () => {
               const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
                 method,
                 body: ARTIFACT_CONTENT,
-                headers: { Authorization: "Basic badcreds" }
+                headers: { Authorization: invalidAuthHeader }
               }, TEST_ENV)
               expect(res.status).toBe(401)
             })
@@ -205,7 +206,7 @@ describe("Integration: API Endpoints", () => {
         it("should return 401 when deleting with bad credentials", async () => {
           const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
             method: "DELETE",
-            headers: { Authorization: "Basic badcreds" }
+            headers: { Authorization: invalidAuthHeader }
           }, TEST_ENV)
           expect(res.status).toBe(401)
         })

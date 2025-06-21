@@ -6,8 +6,8 @@ export default defineWorkersConfig({
     poolOptions: {
       workers: {
         singleWorker: true,
-        isolatedStorage: false,
-        wrangler: { configPath: "./wrangler.jsonc" }
+        isolatedStorage: true,
+        wrangler: { configPath: "./test/wrangler.jsonc" }
       }
     }
   }

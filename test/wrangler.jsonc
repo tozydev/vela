@@ -1,0 +1,54 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "vela",
+  "compatibility_date": "2025-04-03",
+  "main": "../src/index.ts",
+  "vars": {
+    "REPOSITORIES": [
+      {
+        "name": "shared-public",
+        "private": false,
+        "bucket": "SHARED_BUCKET",
+        "prefix": "public"
+      },
+      {
+        "name": "shared-private",
+        "private": true,
+        "bucket": "SHARED_BUCKET",
+        "prefix": "private"
+      },
+      {
+        "name": "custom-credential",
+        "private": false,
+        "bucket": "SHARED_BUCKET",
+        "prefix": "custom"
+      },
+      {
+        "name": "isolated-public",
+        "private": false,
+        "bucket": "ISOLATED_PUBLIC_BUCKET",
+        "prefix": null
+      },
+      {
+        "name": "isolated-private",
+        "private": true,
+        "bucket": "ISOLATED_PRIVATE_BUCKET",
+        "prefix": null
+      }
+    ]
+  },
+  "r2_buckets": [
+    {
+      "binding": "SHARED_BUCKET",
+      "bucket_name": "shared-bucket"
+    },
+    {
+      "binding": "ISOLATED_PUBLIC_BUCKET",
+      "bucket_name": "isolated-public-bucket"
+    },
+    {
+      "binding": "ISOLATED_PRIVATE_BUCKET",
+      "bucket_name": "isolated-private-bucket"
+    }
+  ]
+}

@@ -102,6 +102,16 @@ describe("Integration: API Endpoints", () => {
           const res = await app.request(`/${repo.name}/`, {}, TEST_ENV)
           expect(res.status).toBe(404)
         })
+
+        it("should return 404 with request for artifact group", async () => {
+          const bucketPath = repo.prefix ? `${repo.prefix}/${ARTIFACT_PATH}` : ARTIFACT_PATH
+          await repo.bucket.put(bucketPath, ARTIFACT_CONTENT, {
+            httpMetadata: { contentType: "application/xml" }
+          })
+
+          const res = await app.request(`/${repo.name}/vn/id/tozydev/vela/1.0.0/`, {}, TEST_ENV)
+          expect(res.status).toBe(404)
+        })
       })
     })
 

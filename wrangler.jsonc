@@ -19,27 +19,31 @@
       {
         "name": "releases",
         "private": false,
-        "bucket": "VELA_BUCKET",
+        "bucket": "VELA_PUBLIC_BUCKET",
         "prefix": "releases"
       },
       {
         "name": "snapshots",
         "private": false,
-        "bucket": "VELA_BUCKET",
+        "bucket": "VELA_PUBLIC_BUCKET",
         "prefix": "snapshots"
       },
       {
         "name": "private",
         "private": true,
-        "bucket": "VELA_BUCKET",
+        "bucket": "VELA_PRIVATE_BUCKET",
         "prefix": "private"
       }
     ]
   },
   "r2_buckets": [
     {
-      "binding": "VELA_BUCKET",
-      "bucket_name": "vela"
+      "binding": "VELA_PUBLIC_BUCKET",
+      "bucket_name": "vela-public"
+    },
+    {
+      "binding": "VELA_PRIVATE_BUCKET",
+      "bucket_name": "vela-private"
     }
   ]
 }

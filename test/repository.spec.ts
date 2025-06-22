@@ -20,31 +20,22 @@ const mockBucket: R2Bucket = {
 }
 
 describe("RepositoryImpl", () => {
-  it("should construct full path with prefix", () => {
-    const repo = new RepositoryImpl("test-repo", false, mockBucket, "releases")
-    // @ts-ignore
-    const fullPath = repo.getFullPath("com/example/artifact.pom")
-    expect(fullPath).toBe("releases/com/example/artifact.pom")
-  })
-
-  it("should construct full path with a prefix ending in a slash", () => {
-    const repo = new RepositoryImpl("test-repo", false, mockBucket, "releases/")
-    // @ts-ignore
-    const fullPath = repo.getFullPath("com/example/artifact.pom")
-    expect(fullPath).toBe("releases/com/example/artifact.pom")
-  })
-
-  it("should construct full path without prefix", () => {
-    const repo = new RepositoryImpl("test-repo", false, mockBucket, null)
-    // @ts-ignore
-    const fullPath = repo.getFullPath("com/example/artifact.pom")
-    expect(fullPath).toBe("com/example/artifact.pom")
-  })
-
   it("should call bucket.get with the correct prefixed path", async () => {
-    const repo = new RepositoryImpl("test-repo", false, mockBucket, "artifacts")
-    await repo.getArtifact("path/to/file.jar")
-    expect(mockBucket.get).toHaveBeenCalledWith("artifacts/path/to/file.jar")
+    const repo = new RepositoryImpl("test-repo", false, mockBucket, "releases")
+    await repo.getArtifact("com/example/artifact.pom")
+    expect(mockBucket.get).toHaveBeenCalledWith("releases/com/example/artifact.pom")
+  })
+
+  it("should call bucket.get with the correct prefixed path ending in a slash", async () => {
+    const repo = new RepositoryImpl("test-repo", false, mockBucket, "releases/")
+    await repo.getArtifact("com/example/artifact.pom")
+    expect(mockBucket.get).toHaveBeenCalledWith("releases/com/example/artifact.pom")
+  })
+
+  it("should call bucket.get with the correct path without prefix", async () => {
+    const repo = new RepositoryImpl("test-repo", false, mockBucket, null)
+    await repo.getArtifact("com/example/artifact.pom")
+    expect(mockBucket.get).toHaveBeenCalledWith("com/example/artifact.pom")
   })
 
   it("should call bucket.put with the correct prefixed path", async () => {

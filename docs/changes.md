@@ -3,7 +3,7 @@
 This file contains a list of changes made to the Vela project.
 This file also provides migration guides for breaking changes.
 
-## 1.0.0 (2025-06-xx)
+## 1.0.0 (2025-06-22)
 
 ### Breaking Changes
 

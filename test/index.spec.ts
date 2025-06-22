@@ -203,6 +203,26 @@ describe("Integration: API Endpoints", () => {
               }, TEST_ENV)
               expect(res.status).toBe(400)
             })
+
+            if (repo.name === "custom-credential") {
+              it("should return 201 when deploying with shared credentials", async () => {
+                  const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
+                    method,
+                    body: ARTIFACT_CONTENT,
+                    headers: { Authorization: authHeader, "Content-Type": "application/xml" }
+                  }, TEST_ENV)
+                  // noinspection DuplicatedCode
+                  expect(res.status).toBe(201)
+
+                  // Verify
+                  const bucketPath = repo.prefix ? `${repo.prefix}/${ARTIFACT_PATH}` : ARTIFACT_PATH
+                  const obj = await repo.bucket.get(bucketPath)
+                  expect(obj).not.toBeNull()
+                  expect(await obj?.text()).toBe(ARTIFACT_CONTENT)
+                  expect(obj?.httpMetadata?.contentType).toBe("application/xml")
+                }
+              )
+            }
           })
         })
       })
@@ -247,6 +267,22 @@ describe("Integration: API Endpoints", () => {
           }, TEST_ENV)
           expect(res.status).toBe(204)
         })
+
+        if (repo.name === "custom-credential") {
+          it("should return 204 when deleting with shared credentials", async () => {
+            const bucketPath = repo.prefix ? `${repo.prefix}/${ARTIFACT_PATH}` : ARTIFACT_PATH
+            await repo.bucket.put(bucketPath, ARTIFACT_CONTENT)
+
+            const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
+              method: "DELETE",
+              headers: { Authorization: authHeader }
+            }, TEST_ENV)
+            expect(res.status).toBe(204)
+
+            const obj = await repo.bucket.get(bucketPath)
+            expect(obj).toBeNull()
+          })
+        }
       })
     })
   })

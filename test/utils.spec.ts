@@ -9,6 +9,7 @@ describe("getMimeType", () => {
   it("should return correct MIME type for XML files", () => {
     expect(getMimeType("pom.xml")).toBe("application/xml")
     expect(getMimeType("config.xml")).toBe("application/xml")
+    expect(getMimeType("artifact.pom")).toBe("application/xml")
   })
 
   it("should return correct MIME type for JSON files", () => {

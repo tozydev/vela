@@ -1,6 +1,7 @@
 const mimeTypes: { [key: string]: string } = {
   "jar": "application/java-archive",
   "xml": "application/xml",
+  "pom": "application/xml",
   "json": "application/json",
   "zip": "application/zip",
   "module": "application/vnd.org.gradle.module+json",

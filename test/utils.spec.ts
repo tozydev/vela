@@ -9,6 +9,7 @@ describe("getMimeType", () => {
   it("should return correct MIME type for XML files", () => {
     expect(getMimeType("pom.xml")).toBe("application/xml")
     expect(getMimeType("config.xml")).toBe("application/xml")
+    expect(getMimeType("artifact.pom")).toBe("application/xml")
   })
 
   it("should return correct MIME type for JSON files", () => {
@@ -58,5 +59,10 @@ describe("getMimeType", () => {
   it("should handle files with multiple dots", () => {
     expect(getMimeType("spring-boot-starter-web-2.7.0.jar")).toBe("application/java-archive")
     expect(getMimeType("artifact-1.0.0.pom.xml")).toBe("application/xml")
+  })
+
+  it("should return correct MIME type for toml files", () => {
+    expect(getMimeType("libs.versions.toml")).toBe("application/toml")
+    expect(getMimeType("settings.toml")).toBe("application/toml")
   })
 })

@@ -1,155 +1,104 @@
-import { env } from "cloudflare:test"
 import app from "../src"
-import { describe, it } from "vitest"
-
-const TEST_ENV = {
-  REPOSITORY_USERNAME: "admin",
-  REPOSITORY_PASSWORD: "admin",
-  "REPOSITORY_CUSTOM-CREDENTIAL_USERNAME": "custom",
-  "REPOSITORY_CUSTOM-CREDENTIAL_PASSWORD": "custom",
-  ...env
-}
-
-const ARTIFACT_PATH = "vn/id/tozydev/vela/1.0.0/vela-1.0.0.pom"
-const ARTIFACT_CONTENT = "<project>...</project>"
-
-const invalidAuthHeader = `Basic ${btoa("invalid:credentials")}`
-const authHeader = `Basic ${btoa(`${TEST_ENV.REPOSITORY_USERNAME}:${TEST_ENV.REPOSITORY_PASSWORD}`)}`
-const customAuthHeader = `Basic ${btoa(`${TEST_ENV["REPOSITORY_CUSTOM-CREDENTIAL_USERNAME"]}:${TEST_ENV["REPOSITORY_CUSTOM-CREDENTIAL_PASSWORD"]}`)}`
-const testRepositories = [
-  {
-    name: "shared-public",
-    auth: authHeader,
-    prefix: "public",
-    bucket: TEST_ENV.SHARED_BUCKET
-  },
-  {
-    name: "shared-private",
-    auth: authHeader,
-    prefix: "private",
-    bucket: TEST_ENV.SHARED_BUCKET
-  },
-  {
-    name: "isolated-public",
-    auth: authHeader,
-    bucket: TEST_ENV.ISOLATED_PUBLIC_BUCKET
-  },
-  {
-    name: "isolated-private",
-    auth: authHeader,
-    bucket: TEST_ENV.ISOLATED_PRIVATE_BUCKET
-  },
-  {
-    name: "custom-credential",
-    auth: customAuthHeader,
-    prefix: "custom",
-    bucket: TEST_ENV.SHARED_BUCKET
-  }
-]
+import {
+  ARTIFACT_CONTENT,
+  ARTIFACT_PATH,
+  authHeader,
+  invalidAuthHeader,
+  privateRepositories,
+  publicRepositories,
+  TEST_ENV,
+  testRepositories
+} from "./test-fixtures"
+import { describe } from "vitest"
 
 describe("Integration: API Endpoints", () => {
-  describe("GET /{repository}/{artifact}", () => {
-    const publicRepositories = [
-      {
-        name: "shared-public",
-        bucket: TEST_ENV.SHARED_BUCKET,
-        prefix: "public"
-      },
-      {
-        name: "custom-credential",
-        bucket: TEST_ENV.SHARED_BUCKET,
-        prefix: "custom"
-      },
-      {
-        name: "isolated-public",
-        bucket: TEST_ENV.ISOLATED_PUBLIC_BUCKET
-      }
-    ]
-    const privateRepositories = [
-      {
-        name: "shared-private",
-        bucket: TEST_ENV.SHARED_BUCKET,
-        prefix: "private"
-      },
-      {
-        name: "isolated-private",
-        bucket: TEST_ENV.ISOLATED_PRIVATE_BUCKET
-      }
-    ]
+  describe("GET & HEAD /{repository}/{artifact}", () => {
+    const methods = ["GET", "HEAD"]
+    methods.forEach((method) => {
+      describe(`Using ${method}`, () => {
+        publicRepositories.forEach((repo) => {
+          describe(`Public Repository (${repo.name})`, () => {
+            it("should return 404 for a non-existent artifact", async () => {
+              const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {}, TEST_ENV)
+              expect(res.status).toBe(404)
+            })
 
-    publicRepositories.forEach((repo) => {
-      describe(`Public Repository (${repo.name})`, () => {
-        it("should return 404 for a non-existent artifact", async () => {
-          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {}, TEST_ENV)
-          expect(res.status).toBe(404)
-        })
+            it("should return 200 if it exists", async () => {
+              const bucketPath = repo.prefix ? `${repo.prefix}/${ARTIFACT_PATH}` : ARTIFACT_PATH
 
-        it("should return 200 and the artifact content if it exists", async () => {
-          const bucketPath = repo.prefix ? `${repo.prefix}/${ARTIFACT_PATH}` : ARTIFACT_PATH
+              await repo.bucket.put(bucketPath, ARTIFACT_CONTENT, {
+                httpMetadata: { contentType: "application/xml" }
+              })
 
-          await repo.bucket.put(bucketPath, ARTIFACT_CONTENT, {
-            httpMetadata: { contentType: "application/xml" }
+              const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {}, TEST_ENV)
+
+              expect(res.status).toBe(200)
+              expect(res.headers.get("content-type")).toContain("application/xml")
+
+              const content = await res.text()
+              if (method === "GET") {
+                expect(content).toBe(ARTIFACT_CONTENT)
+              }
+            })
+
+            it("should return 404 for a request to root repository path", async () => {
+              const res = await app.request(`/${repo.name}/`, {}, TEST_ENV)
+              expect(res.status).toBe(404)
+            })
+
+            it("should return 404 with request for artifact group", async () => {
+              const bucketPath = repo.prefix ? `${repo.prefix}/${ARTIFACT_PATH}` : ARTIFACT_PATH
+              await repo.bucket.put(bucketPath, ARTIFACT_CONTENT, {
+                httpMetadata: { contentType: "application/xml" }
+              })
+
+              const res = await app.request(`/${repo.name}/vn/id/tozydev/vela/1.0.0/`, {}, TEST_ENV)
+              expect(res.status).toBe(404)
+            })
           })
-
-          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {}, TEST_ENV)
-
-          expect(res.status).toBe(200)
-          expect(res.headers.get("content-type")).toContain("application/xml")
-          expect(await res.text()).toBe(ARTIFACT_CONTENT)
         })
 
-        it("should return 404 for a request to root repository path", async () => {
-          const res = await app.request(`/${repo.name}/`, {}, TEST_ENV)
-          expect(res.status).toBe(404)
-        })
+        privateRepositories.forEach((repo) => {
+          describe(`Private Repository (${repo.name})`, () => {
+            it("should return 401 Unauthorized without authentication", async () => {
+              const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {}, TEST_ENV)
+              expect(res.status).toBe(401)
+            })
 
-        it("should return 404 with request for artifact group", async () => {
-          const bucketPath = repo.prefix ? `${repo.prefix}/${ARTIFACT_PATH}` : ARTIFACT_PATH
-          await repo.bucket.put(bucketPath, ARTIFACT_CONTENT, {
-            httpMetadata: { contentType: "application/xml" }
+            it("should return 401 Unauthorized with bad credentials", async () => {
+              const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
+                headers: { Authorization: invalidAuthHeader }
+              }, TEST_ENV)
+
+              expect(res.status).toBe(401)
+            })
+
+            it("should return 404 for a non-existent artifact with valid auth", async () => {
+              const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
+                headers: { Authorization: authHeader }
+              }, TEST_ENV)
+
+              expect(res.status).toBe(404)
+            })
+
+            it("should return 200 if exists with valid auth", async () => {
+              const bucketPath = repo.prefix ? `${repo.prefix}/${ARTIFACT_PATH}` : ARTIFACT_PATH
+              await repo.bucket.put(bucketPath, ARTIFACT_CONTENT, {
+                httpMetadata: { contentType: "application/xml" }
+              })
+
+              const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
+                headers: { Authorization: authHeader }
+              }, TEST_ENV)
+
+              expect(res.status).toBe(200)
+              expect(res.headers.get("content-type")).toContain("application/xml")
+              const content = await res.text()
+              if (method === "GET") {
+                expect(content).toBe(ARTIFACT_CONTENT)
+              }
+            })
           })
-
-          const res = await app.request(`/${repo.name}/vn/id/tozydev/vela/1.0.0/`, {}, TEST_ENV)
-          expect(res.status).toBe(404)
-        })
-      })
-    })
-
-    privateRepositories.forEach((repo) => {
-      describe(`Private Repository (${repo.name})`, () => {
-        it("should return 401 Unauthorized without authentication", async () => {
-          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {}, TEST_ENV)
-          expect(res.status).toBe(401)
-        })
-
-        it("should return 401 Unauthorized with bad credentials", async () => {
-          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
-            headers: { Authorization: invalidAuthHeader }
-          }, TEST_ENV)
-
-          expect(res.status).toBe(401)
-        })
-
-        it("should return 404 for a non-existent artifact with valid auth", async () => {
-          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
-            headers: { Authorization: authHeader }
-          }, TEST_ENV)
-
-          expect(res.status).toBe(404)
-        })
-
-        it("should return 200 and the artifact with valid auth", async () => {
-          const bucketPath = repo.prefix ? `${repo.prefix}/${ARTIFACT_PATH}` : ARTIFACT_PATH
-          await repo.bucket.put(bucketPath, ARTIFACT_CONTENT, {
-            httpMetadata: { contentType: "application/xml" }
-          })
-
-          const res = await app.request(`/${repo.name}/${ARTIFACT_PATH}`, {
-            headers: { Authorization: authHeader }
-          }, TEST_ENV)
-
-          expect(res.status).toBe(200)
-          expect(await res.text()).toBe(ARTIFACT_CONTENT)
         })
       })
     })

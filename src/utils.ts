@@ -1,6 +1,7 @@
 const mimeTypes: { [key: string]: string } = {
   "jar": "application/java-archive",
   "xml": "application/xml",
+  "pom": "application/xml",
   "json": "application/json",
   "zip": "application/zip",
   "module": "application/vnd.org.gradle.module+json",
@@ -8,7 +9,8 @@ const mimeTypes: { [key: string]: string } = {
   "md5": "text/plain",
   "sha1": "text/plain",
   "sha256": "text/plain",
-  "sha512": "text/plain"
+  "sha512": "text/plain",
+  "toml": "application/toml"
 }
 
 export const getMimeType = (path: string) => {

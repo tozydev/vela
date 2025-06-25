@@ -3,6 +3,13 @@
 This file contains a list of changes made to the Vela project.
 This file also provides migration guides for breaking changes.
 
+## 1.1.0 (2025-06-25)
+
+### Features
+
+- Support `.pom` and `.toml` files for artifact MIME type detection.
+- Support `HEAD` method in repository artifact retrieval.
+
 ## 1.0.0 (2025-06-22)
 
 ### Breaking Changes

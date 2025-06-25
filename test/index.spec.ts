@@ -1,82 +1,17 @@
-import { env } from "cloudflare:test"
 import app from "../src"
-import { describe, it } from "vitest"
-
-const TEST_ENV = {
-  REPOSITORY_USERNAME: "admin",
-  REPOSITORY_PASSWORD: "admin",
-  "REPOSITORY_CUSTOM-CREDENTIAL_USERNAME": "custom",
-  "REPOSITORY_CUSTOM-CREDENTIAL_PASSWORD": "custom",
-  ...env
-}
-
-const ARTIFACT_PATH = "vn/id/tozydev/vela/1.0.0/vela-1.0.0.pom"
-const ARTIFACT_CONTENT = "<project>...</project>"
-
-const invalidAuthHeader = `Basic ${btoa("invalid:credentials")}`
-const authHeader = `Basic ${btoa(`${TEST_ENV.REPOSITORY_USERNAME}:${TEST_ENV.REPOSITORY_PASSWORD}`)}`
-const customAuthHeader = `Basic ${btoa(`${TEST_ENV["REPOSITORY_CUSTOM-CREDENTIAL_USERNAME"]}:${TEST_ENV["REPOSITORY_CUSTOM-CREDENTIAL_PASSWORD"]}`)}`
-const testRepositories = [
-  {
-    name: "shared-public",
-    auth: authHeader,
-    prefix: "public",
-    bucket: TEST_ENV.SHARED_BUCKET
-  },
-  {
-    name: "shared-private",
-    auth: authHeader,
-    prefix: "private",
-    bucket: TEST_ENV.SHARED_BUCKET
-  },
-  {
-    name: "isolated-public",
-    auth: authHeader,
-    bucket: TEST_ENV.ISOLATED_PUBLIC_BUCKET
-  },
-  {
-    name: "isolated-private",
-    auth: authHeader,
-    bucket: TEST_ENV.ISOLATED_PRIVATE_BUCKET
-  },
-  {
-    name: "custom-credential",
-    auth: customAuthHeader,
-    prefix: "custom",
-    bucket: TEST_ENV.SHARED_BUCKET
-  }
-]
+import {
+  ARTIFACT_CONTENT,
+  ARTIFACT_PATH,
+  authHeader,
+  invalidAuthHeader,
+  privateRepositories,
+  publicRepositories,
+  TEST_ENV,
+  testRepositories
+} from "./test-fixtures"
 
 describe("Integration: API Endpoints", () => {
   describe("GET /{repository}/{artifact}", () => {
-    const publicRepositories = [
-      {
-        name: "shared-public",
-        bucket: TEST_ENV.SHARED_BUCKET,
-        prefix: "public"
-      },
-      {
-        name: "custom-credential",
-        bucket: TEST_ENV.SHARED_BUCKET,
-        prefix: "custom"
-      },
-      {
-        name: "isolated-public",
-        bucket: TEST_ENV.ISOLATED_PUBLIC_BUCKET
-      }
-    ]
-    const privateRepositories = [
-      {
-        name: "shared-private",
-        bucket: TEST_ENV.SHARED_BUCKET,
-        prefix: "private"
-      },
-      {
-        name: "isolated-private",
-        bucket: TEST_ENV.ISOLATED_PRIVATE_BUCKET
-      }
-    ]
-
     publicRepositories.forEach((repo) => {
       describe(`Public Repository (${repo.name})`, () => {
         it("should return 404 for a non-existent artifact", async () => {

@@ -22,7 +22,7 @@ export const authHandler = createMiddleware(async (c: VelaContext, next) => {
   const repository = new RepositoryImpl(config.name, config.private, bucket, config.prefix)
   c.set("repository", repository)
 
-  if (!config.private && c.req.method === "GET") {
+  if (!config.private && (c.req.method === "GET" || c.req.method === "HEAD")) {
     return next()
   }
 

@@ -4,6 +4,9 @@
   "compatibility_date": "2025-04-03",
   "main": "./src/index.ts",
   "workers_dev": false,
+  "placement": {
+    "mode": "smart"
+  },
   "routes": [
     {
       "pattern": "vela.tozydev.id.vn",

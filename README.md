@@ -199,7 +199,7 @@ secure your repositories.
 
 ## 📚 Documentation
 
-* [API Documentation](docs/API_DOCS.md)
+* [API Documentation](docs/api-docs.md)
 
 ## 💥 Breaking Changes
 

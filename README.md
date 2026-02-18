@@ -1,12 +1,13 @@
 # Vela
 
+> [!IMPORTANT]
+> This project is no longer maintained.
+
 📦 Lightweight Maven-compatible artifact hosting powered by Cloudflare Workers.
 
 [![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/tozydev/vela)
 
-Vela is a minimal, serverless artifact hosting service designed for small or personal use. Built on
-**Cloudflare Workers** and **R2**, it supports multiple repositories, basic authentication, and integration with Maven,
-Gradle, and other tools.
+Vela is a minimal, serverless artifact hosting service designed for small or personal use. Built on **Cloudflare Workers** and **R2**, it supports multiple repositories, basic authentication, and integration with Maven, Gradle, and other tools.
 
 ## ✨ Features
 
@@ -40,8 +41,7 @@ Work-in-progress...
 
 ### Repository Configuration
 
-The `REPOSITORIES` variable is a JSON array of objects, each representing a repository. Each object should contain the
-following properties (empty default value is required):
+The `REPOSITORIES` variable is a JSON array of objects, each representing a repository. Each object should contain the following properties (empty default value is required):
 
 | Property  | Type    | Default value | Description                                                  |
 |-----------|---------|---------------|--------------------------------------------------------------|
@@ -194,8 +194,7 @@ Vela uses environment variables for authentication credentials. You can set the 
 
 _Where `<repository name>` is the name of the repository as defined in the `REPOSITORIES` configuration._
 
-I recommend using a strong random password for `REPOSITORY_PASSWORD` and `REPOSITORY_<repository name>_PASSWORD` to
-secure your repositories.
+I recommend using a strong random password for `REPOSITORY_PASSWORD` and `REPOSITORY_<repository name>_PASSWORD` to secure your repositories.
 
 ## 📚 Documentation
 
@@ -203,8 +202,7 @@ secure your repositories.
 
 ## 💥 Breaking Changes
 
-If you are upgrading from a previous version, please refer to the [CHANGELOG](docs/changes.md) for details on breaking
-changes and migration steps.
+If you are upgrading from a previous version, please refer to the [CHANGELOG](docs/changes.md) for details on breaking changes and migration steps.
 
 ## 📄 License
 
